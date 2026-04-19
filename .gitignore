@@ -1,5 +1,6 @@
 # Rust build artifacts
 /target/
+/apps/desktop-ui/src-tauri/target/
 **/*.rs.bk
 
 # Logs

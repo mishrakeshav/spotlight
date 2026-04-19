@@ -1,4 +1,4 @@
-use shared_types::{SearchQuery, SearchResponse, SearchResult};
+use shared_types::{ResultKind, SearchQuery, SearchResponse, SearchResult};
 use std::time::Instant;
 
 #[derive(Default)]
@@ -56,23 +56,31 @@ fn rank_item(item: &SearchResult, query: &str) -> f32 {
 
     let title = item.title.to_lowercase();
     let subtitle = item.subtitle.clone().unwrap_or_default().to_lowercase();
+    let title_tokens = tokenize(&title);
+    let query_tokens = tokenize(query);
+    let compact_query = compact(query);
+    let compact_title = compact(&title);
 
     let mut score = item.score;
+    let mut matched = false;
 
     if title == query {
-        score += 2.0;
+        score += 3.0;
+        matched = true;
     }
     if title.starts_with(query) {
-        score += 1.2;
+        score += 1.5;
+        matched = true;
     }
     if title.contains(query) {
-        score += 0.7;
+        score += 1.0;
+        matched = true;
     }
     if subtitle.contains(query) {
-        score += 0.3;
+        score += 0.45;
+        matched = true;
     }
 
-    let query_tokens = query.split_whitespace().collect::<Vec<_>>();
     if !query_tokens.is_empty() {
         let mut token_hits = 0;
         for token in &query_tokens {
@@ -81,7 +89,41 @@ fn rank_item(item: &SearchResult, query: &str) -> f32 {
             }
         }
         if token_hits > 0 {
-            score += (token_hits as f32) * 0.4;
+            score += (token_hits as f32) * 0.55;
+            matched = true;
+        }
+        if token_hits == query_tokens.len() {
+            score += 0.6;
+        }
+    }
+
+    if title_tokens.iter().any(|token| token.starts_with(query)) {
+        score += 0.9;
+        matched = true;
+    }
+
+    if !compact_query.is_empty() && compact_title.contains(&compact_query) {
+        score += 0.5;
+        matched = true;
+    }
+
+    if is_subsequence(&title, query) {
+        score += 0.25;
+        matched = true;
+    }
+
+    if matched {
+        match item.kind {
+            ResultKind::App => {
+                score += 1.1;
+            }
+            ResultKind::File => {
+                score -= 0.25;
+            }
+            ResultKind::Folder => {
+                score -= 0.05;
+            }
+            ResultKind::Command | ResultKind::Calculation => {}
         }
     }
 
@@ -90,6 +132,36 @@ fn rank_item(item: &SearchResult, query: &str) -> f32 {
     } else {
         score
     }
+}
+
+fn tokenize(value: &str) -> Vec<String> {
+    value
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect()
+}
+
+fn compact(value: &str) -> String {
+    value.chars().filter(|c| c.is_alphanumeric()).collect()
+}
+
+fn is_subsequence(haystack: &str, needle: &str) -> bool {
+    if needle.is_empty() {
+        return false;
+    }
+
+    let mut chars = needle.chars();
+    let mut current = chars.next();
+    for c in haystack.chars() {
+        if current == Some(c) {
+            current = chars.next();
+            if current.is_none() {
+                return true;
+            }
+        }
+    }
+    false
 }
 
 #[cfg(test)]
@@ -128,5 +200,26 @@ mod tests {
         });
 
         assert_eq!(r.results.first().expect("result").title, "Files");
+    }
+
+    #[test]
+    fn app_match_beats_file_match_for_chrome() {
+        let app = SearchResult {
+            id: "app:chrome".to_string(),
+            title: "Google Chrome".to_string(),
+            subtitle: Some("google-chrome-stable".to_string()),
+            kind: ResultKind::App,
+            score: 0.9,
+        };
+
+        let file = SearchResult {
+            id: "file:chrome_notes.txt".to_string(),
+            title: "chrome_notes.txt".to_string(),
+            subtitle: Some("/home/u/notes/chrome_notes.txt".to_string()),
+            kind: ResultKind::File,
+            score: 0.7,
+        };
+
+        assert!(rank_item(&app, "chrome") > rank_item(&file, "chrome"));
     }
 }

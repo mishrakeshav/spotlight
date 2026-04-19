@@ -24,14 +24,46 @@ pub struct IndexOptions {
 impl Default for IndexOptions {
     fn default() -> Self {
         let home = env::var("HOME").unwrap_or_else(|_| "/home/user".to_string());
-        let local_apps = PathBuf::from(format!("{home}/.local/share/applications"));
         Self {
-            app_paths: vec![PathBuf::from("/usr/share/applications"), local_apps],
+            app_paths: collect_app_paths(&home),
             file_paths: vec![PathBuf::from(home)],
             max_files: 5000,
             include_hidden: false,
         }
     }
+}
+
+fn collect_app_paths(home: &str) -> Vec<PathBuf> {
+    let mut paths = Vec::new();
+    let mut seen = HashSet::new();
+
+    let mut push = |path: PathBuf| {
+        let key = path.to_string_lossy().to_string();
+        if seen.insert(key) {
+            paths.push(path);
+        }
+    };
+
+    push(PathBuf::from(format!("{home}/.local/share/applications")));
+    push(PathBuf::from(format!(
+        "{home}/.local/share/flatpak/exports/share/applications"
+    )));
+    push(PathBuf::from("/usr/local/share/applications"));
+    push(PathBuf::from("/usr/share/applications"));
+    push(PathBuf::from("/var/lib/flatpak/exports/share/applications"));
+    push(PathBuf::from("/var/lib/snapd/desktop/applications"));
+
+    if let Ok(xdg_data_dirs) = env::var("XDG_DATA_DIRS") {
+        for base in xdg_data_dirs
+            .split(':')
+            .map(str::trim)
+            .filter(|entry| !entry.is_empty())
+        {
+            push(PathBuf::from(base).join("applications"));
+        }
+    }
+
+    paths
 }
 
 pub fn build_index(options: &IndexOptions) -> Result<(Vec<SearchResult>, IndexStats)> {
@@ -178,7 +210,7 @@ fn is_hidden(path: &Path) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_desktop_entry;
+    use super::{collect_app_paths, parse_desktop_entry};
 
     #[test]
     fn parses_desktop_entry() {
@@ -186,5 +218,22 @@ mod tests {
         let parsed = parse_desktop_entry(desktop).expect("desktop should parse");
         assert_eq!(parsed.0, "Terminal");
         assert_eq!(parsed.1.as_deref(), Some("gnome-terminal --wait"));
+    }
+
+    #[test]
+    fn collects_standard_app_paths() {
+        let paths = collect_app_paths("/home/tester");
+        let as_strings = paths
+            .iter()
+            .map(|p| p.to_string_lossy().to_string())
+            .collect::<Vec<_>>();
+
+        assert!(as_strings
+            .iter()
+            .any(|p| p == "/home/tester/.local/share/applications"));
+        assert!(as_strings.iter().any(|p| p == "/usr/share/applications"));
+        assert!(as_strings
+            .iter()
+            .any(|p| p == "/var/lib/flatpak/exports/share/applications"));
     }
 }
