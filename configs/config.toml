@@ -1,0 +1,12 @@
+[search]
+max_results = 20
+include_hidden = false
+
+[indexer]
+watch = true
+paths = ["/home/user", "/usr/share/applications", "~/.local/share/applications"]
+
+[ui]
+theme = "aurora"
+show_preview = true
+compact_mode = false

@@ -1,0 +1,19 @@
+[package]
+name = "desktop-ui-tauri"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+anyhow.workspace = true
+core-actions = { path = "../../../crates/core-actions" }
+core-indexer = { path = "../../../crates/core-indexer" }
+core-search = { path = "../../../crates/core-search" }
+once_cell.workspace = true
+shared-types = { path = "../../../crates/shared-types" }
+tauri = { version = "2", features = [] }
+tracing.workspace = true
+tracing-subscriber.workspace = true
