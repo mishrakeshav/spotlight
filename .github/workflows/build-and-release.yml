@@ -58,13 +58,20 @@ jobs:
         working-directory: apps/desktop-ui
         run: npm run tauri:build -- --bundles deb,appimage
 
+      - name: Show produced bundles
+        run: |
+          echo "Listing bundle outputs from workspace target:"
+          ls -la target/release/bundle || true
+          ls -la target/release/bundle/deb || true
+          ls -la target/release/bundle/appimage || true
+
       - name: Upload CI artifacts
         uses: actions/upload-artifact@v4
         with:
           name: spotlight-linux-bundles
           path: |
-            apps/desktop-ui/src-tauri/target/release/bundle/deb/*.deb
-            apps/desktop-ui/src-tauri/target/release/bundle/appimage/*.AppImage
+            target/release/bundle/deb/*.deb
+            target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
 
       - name: Publish GitHub Release assets (tags only)
@@ -72,6 +79,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            apps/desktop-ui/src-tauri/target/release/bundle/deb/*.deb
-            apps/desktop-ui/src-tauri/target/release/bundle/appimage/*.AppImage
+            target/release/bundle/deb/*.deb
+            target/release/bundle/appimage/*.AppImage
           generate_release_notes: true

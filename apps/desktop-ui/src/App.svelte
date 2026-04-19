@@ -27,6 +27,14 @@
     return classify(item).toUpperCase();
   }
 
+  function kindGlyph(item) {
+    const kind = classify(item);
+    if (kind === "app") return "◉";
+    if (kind === "file") return "▦";
+    if (kind === "folder") return "▣";
+    return "◌";
+  }
+
   function scheduleSearch() {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
@@ -185,7 +193,10 @@
               on:dblclick={() => void openSelected()}
             >
               <div class="row-top">
-                <span class="title">{item.title}</span>
+                <span class="title">
+                  <span class="glyph">{kindGlyph(item)}</span>
+                  {item.title}
+                </span>
                 <span class="kind">{displayKind(item)}</span>
               </div>
               {#if item.subtitle}
@@ -229,44 +240,54 @@
     display: grid;
     place-items: center;
     padding: 24px;
-    background: rgba(4, 10, 16, 0.38);
-    backdrop-filter: blur(16px) saturate(1.1);
+    background: rgba(245, 247, 255, 0.16);
+    backdrop-filter: blur(22px) saturate(1.2);
   }
 
   .overlay {
-    width: min(1080px, 100%);
-    min-height: min(720px, 90vh);
-    border: 1px solid var(--border);
-    background: var(--panel);
-    backdrop-filter: blur(18px);
-    border-radius: 24px;
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+    width: min(760px, 100%);
+    min-height: min(520px, 84vh);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(229, 240, 252, 0.24)),
+      rgba(215, 228, 244, 0.22);
+    backdrop-filter: blur(34px) saturate(1.3);
+    border-radius: 20px;
+    box-shadow:
+      0 26px 70px rgba(35, 58, 102, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.18);
     display: grid;
     grid-template-rows: auto 1fr auto;
     overflow: hidden;
   }
 
   .search-box {
-    padding: 18px;
-    border-bottom: 1px solid var(--border);
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.32);
     display: grid;
-    gap: 12px;
+    gap: 10px;
   }
 
   input {
     width: 100%;
-    border: 1px solid rgba(220, 245, 255, 0.18);
-    background: rgba(7, 18, 28, 0.75);
-    color: var(--text);
-    border-radius: 14px;
-    padding: 14px 16px;
-    font-size: 1.03rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(248, 252, 255, 0.44);
+    color: #304764;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-size: 1rem;
     outline: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  }
+
+  input::placeholder {
+    color: rgba(54, 82, 113, 0.7);
   }
 
   input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-soft);
+    border-color: rgba(130, 175, 255, 0.75);
+    box-shadow: 0 0 0 3px rgba(144, 183, 255, 0.24);
   }
 
   .filters {
@@ -276,12 +297,12 @@
   }
 
   .filters button {
-    border: 1px solid rgba(200, 247, 255, 0.22);
-    background: rgba(200, 247, 255, 0.06);
-    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(249, 252, 255, 0.42);
+    color: rgba(54, 78, 106, 0.9);
     border-radius: 999px;
-    padding: 6px 10px;
-    font-size: 0.76rem;
+    padding: 4px 9px;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     display: inline-flex;
@@ -293,38 +314,39 @@
 
   .filters button:hover,
   .filters button.active {
-    border-color: rgba(77, 226, 186, 0.5);
-    background: rgba(77, 226, 186, 0.16);
+    border-color: rgba(163, 194, 255, 0.82);
+    background: rgba(232, 243, 255, 0.66);
+    color: rgba(33, 60, 92, 0.96);
   }
 
   .count {
     border-radius: 999px;
-    background: rgba(7, 18, 28, 0.7);
+    background: rgba(94, 128, 167, 0.12);
     padding: 2px 7px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .content {
     min-height: 0;
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
   }
 
   .results {
     overflow: auto;
-    border-right: 1px solid var(--border);
-    padding: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.32);
+    padding: 6px 8px;
   }
 
   .results button {
     width: 100%;
     border: 1px solid transparent;
     background: transparent;
-    color: var(--text);
+    color: #2f4764;
     text-align: left;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 6px;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 2px;
     cursor: pointer;
     transition: 120ms ease;
     opacity: 0;
@@ -335,8 +357,8 @@
 
   .results button:hover,
   .results button.selected {
-    background: rgba(200, 247, 255, 0.08);
-    border-color: rgba(200, 247, 255, 0.18);
+    background: rgba(223, 239, 255, 0.58);
+    border-color: rgba(165, 195, 255, 0.62);
   }
 
   .row-top {
@@ -347,40 +369,58 @@
   }
 
   .title {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     font-weight: 600;
+    font-size: 0.98rem;
+  }
+
+  .glyph {
+    width: 20px;
+    height: 20px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    color: rgba(59, 84, 113, 0.84);
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.65);
   }
 
   .kind {
-    font-size: 0.77rem;
-    color: var(--muted);
+    font-size: 0.7rem;
+    color: rgba(76, 104, 137, 0.9);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
   .subtitle {
-    margin-top: 4px;
-    font-size: 0.85rem;
-    color: var(--muted);
+    margin-top: 2px;
+    font-size: 0.84rem;
+    color: rgba(84, 114, 148, 0.84);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .preview {
-    padding: 20px;
+    padding: 14px;
     display: grid;
     align-content: start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .preview h2 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.75rem;
+    color: #213954;
+    letter-spacing: -0.01em;
   }
 
   .preview p {
     margin: 0;
-    color: var(--muted);
+    color: rgba(69, 95, 128, 0.88);
     word-break: break-word;
   }
 
@@ -393,11 +433,12 @@
   .pill {
     display: inline-flex;
     width: fit-content;
-    font-size: 0.8rem;
-    background: rgba(77, 226, 186, 0.12);
-    border: 1px solid rgba(77, 226, 186, 0.3);
+    font-size: 0.76rem;
+    background: rgba(248, 252, 255, 0.46);
+    border: 1px solid rgba(255, 255, 255, 0.52);
+    color: rgba(64, 92, 124, 0.94);
     border-radius: 999px;
-    padding: 4px 10px;
+    padding: 4px 9px;
   }
 
   .actions {
@@ -416,28 +457,34 @@
   }
 
   .actions button {
-    border: 1px solid rgba(77, 226, 186, 0.45);
-    background: rgba(77, 226, 186, 0.16);
-    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.56);
+    background: rgba(247, 251, 255, 0.5);
+    color: rgba(40, 65, 94, 0.94);
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 7px 11px;
     cursor: pointer;
+    font-weight: 600;
+  }
+
+  .actions button:hover {
+    background: rgba(237, 246, 255, 0.8);
   }
 
   .hint {
     font-size: 0.78rem;
-    color: var(--muted);
+    color: rgba(69, 96, 130, 0.88);
   }
 
   .status {
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    padding: 10px 14px;
-    font-size: 0.83rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.34);
+    color: rgba(74, 104, 139, 0.86);
+    padding: 8px 12px;
+    font-size: 0.76rem;
+    background: rgba(246, 250, 255, 0.28);
   }
 
   .empty {
-    color: var(--muted);
+    color: rgba(80, 108, 141, 0.88);
     padding: 16px;
   }
 
