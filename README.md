@@ -2,6 +2,12 @@
 
 Spotlight-like launcher for Ubuntu/Linux, built with Rust + Tauri + Svelte.
 
+## Demo Video
+
+![Demo Preview](./screenshots/demo-preview.gif)
+
+[Watch full demo video (.webm)](./screenshots/Screencast%20from%202026-04-19%2019-27-19.webm)
+
 ## Features
 
 - Search installed desktop apps and files quickly
