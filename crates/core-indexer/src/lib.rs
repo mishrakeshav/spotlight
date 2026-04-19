@@ -110,7 +110,7 @@ fn index_desktop_apps(paths: &[PathBuf], seen: &mut HashSet<String>) -> Result<V
                     apps.push(SearchResult {
                         id,
                         title: name,
-                        subtitle: Some(exec.unwrap_or_else(|| path.display().to_string())),
+                        subtitle: Some(app_subtitle(path, exec.as_deref())),
                         kind: ResultKind::App,
                         score: 0.9,
                     });
@@ -152,6 +152,19 @@ fn clean_exec(exec: &str) -> String {
         .filter(|part| !part.starts_with('%'))
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+fn app_subtitle(desktop_path: &Path, exec: Option<&str>) -> String {
+    if let Some(exec) = exec {
+        if let Some(binary) = exec
+            .split_whitespace()
+            .find(|part| !part.is_empty() && !part.starts_with('%'))
+            .and_then(|part| Path::new(part).file_name().and_then(OsStr::to_str))
+        {
+            return binary.to_string();
+        }
+    }
+    desktop_path.display().to_string()
 }
 
 fn index_filesystem(

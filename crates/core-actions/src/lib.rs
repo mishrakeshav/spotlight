@@ -39,6 +39,14 @@ fn launch_app(result: &SearchResult) -> Result<String> {
         return Ok(format!("focus-running-app:{}", result.id));
     }
 
+    if let Some(exec) = app_desktop_path(&result.id)
+        .as_deref()
+        .and_then(read_exec_from_desktop_file)
+    {
+        let status = Command::new("sh").arg("-lc").arg(exec).spawn()?;
+        return Ok(format!("launch-app:{} (pid {:?})", result.id, status.id()));
+    }
+
     if let Some(exec) = result.subtitle.as_ref().filter(|s| !s.trim().is_empty()) {
         let status = Command::new("sh").arg("-lc").arg(exec).spawn()?;
         return Ok(format!("launch-app:{} (pid {:?})", result.id, status.id()));
@@ -175,6 +183,21 @@ fn parse_desktop_candidates(path: &str) -> Vec<String> {
     }
 
     out
+}
+
+fn read_exec_from_desktop_file(path: &str) -> Option<String> {
+    let raw = fs::read_to_string(path).ok()?;
+    let exec_line = raw
+        .lines()
+        .find(|line| line.starts_with("Exec="))
+        .map(|line| line.trim_start_matches("Exec=").trim())?;
+    Some(
+        exec_line
+            .split_whitespace()
+            .filter(|part| !part.starts_with('%'))
+            .collect::<Vec<_>>()
+            .join(" "),
+    )
 }
 
 fn first_exec_token(exec: &str) -> Option<String> {

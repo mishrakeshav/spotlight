@@ -239,18 +239,18 @@
     width: 100%;
     display: grid;
     place-items: center;
-    padding: 24px;
-    background: rgba(245, 247, 255, 0.16);
-    backdrop-filter: blur(22px) saturate(1.2);
+    padding: 8px;
+    background: transparent;
+    backdrop-filter: none;
   }
 
   .overlay {
-    width: min(760px, 100%);
-    min-height: min(520px, 84vh);
+    width: 100%;
+    min-height: 100%;
     border: 1px solid rgba(255, 255, 255, 0.45);
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(229, 240, 252, 0.24)),
-      rgba(215, 228, 244, 0.22);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.82)),
+      rgba(230, 239, 251, 0.9);
     backdrop-filter: blur(34px) saturate(1.3);
     border-radius: 20px;
     box-shadow:
@@ -264,7 +264,7 @@
 
   .search-box {
     padding: 14px 14px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+    border-bottom: 1px solid rgba(167, 186, 210, 0.42);
     display: grid;
     gap: 10px;
   }
@@ -272,7 +272,7 @@
   input {
     width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    background: rgba(248, 252, 255, 0.44);
+    background: rgba(248, 252, 255, 0.86);
     color: #304764;
     border-radius: 12px;
     padding: 11px 14px;
@@ -298,7 +298,7 @@
 
   .filters button {
     border: 1px solid rgba(255, 255, 255, 0.4);
-    background: rgba(249, 252, 255, 0.42);
+    background: rgba(249, 252, 255, 0.88);
     color: rgba(54, 78, 106, 0.9);
     border-radius: 999px;
     padding: 4px 9px;
@@ -315,13 +315,13 @@
   .filters button:hover,
   .filters button.active {
     border-color: rgba(163, 194, 255, 0.82);
-    background: rgba(232, 243, 255, 0.66);
+    background: rgba(224, 239, 255, 0.95);
     color: rgba(33, 60, 92, 0.96);
   }
 
   .count {
     border-radius: 999px;
-    background: rgba(94, 128, 167, 0.12);
+    background: rgba(94, 128, 167, 0.22);
     padding: 2px 7px;
     font-size: 0.7rem;
   }
@@ -334,7 +334,7 @@
 
   .results {
     overflow: auto;
-    border-right: 1px solid rgba(255, 255, 255, 0.32);
+    border-right: 1px solid rgba(167, 186, 210, 0.42);
     padding: 6px 8px;
   }
 
@@ -357,7 +357,7 @@
 
   .results button:hover,
   .results button.selected {
-    background: rgba(223, 239, 255, 0.58);
+    background: rgba(209, 231, 255, 0.92);
     border-color: rgba(165, 195, 255, 0.62);
   }
 
@@ -434,7 +434,7 @@
     display: inline-flex;
     width: fit-content;
     font-size: 0.76rem;
-    background: rgba(248, 252, 255, 0.46);
+    background: rgba(248, 252, 255, 0.86);
     border: 1px solid rgba(255, 255, 255, 0.52);
     color: rgba(64, 92, 124, 0.94);
     border-radius: 999px;
@@ -458,7 +458,7 @@
 
   .actions button {
     border: 1px solid rgba(255, 255, 255, 0.56);
-    background: rgba(247, 251, 255, 0.5);
+    background: rgba(247, 251, 255, 0.9);
     color: rgba(40, 65, 94, 0.94);
     border-radius: 10px;
     padding: 7px 11px;
@@ -467,7 +467,7 @@
   }
 
   .actions button:hover {
-    background: rgba(237, 246, 255, 0.8);
+    background: rgba(233, 244, 255, 1);
   }
 
   .hint {
@@ -476,11 +476,11 @@
   }
 
   .status {
-    border-top: 1px solid rgba(255, 255, 255, 0.34);
+    border-top: 1px solid rgba(167, 186, 210, 0.42);
     color: rgba(74, 104, 139, 0.86);
     padding: 8px 12px;
     font-size: 0.76rem;
-    background: rgba(246, 250, 255, 0.28);
+    background: rgba(246, 250, 255, 0.78);
   }
 
   .empty {

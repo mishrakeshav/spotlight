@@ -13,8 +13,9 @@
     "windows": [
       {
         "title": "Spotlight",
-        "width": 1120,
-        "height": 760,
+        "width": 980,
+        "height": 620,
+        "center": true,
         "resizable": true,
         "decorations": false,
         "transparent": true,
